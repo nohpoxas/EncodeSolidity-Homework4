@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ethers } from 'ethers';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,17 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'ballot-dapp';
+
+  wallet: ethers.Wallet | undefined;
+
+  constructor() { }
+
+  createWallet() {
+
+  }
+
+  importWallet(seedOrPrivateKey: string) {
+
+  }
+
 }
