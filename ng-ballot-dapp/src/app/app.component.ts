@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import tokenJson from '../assets/MyToken.json';
 
 // claimTokensDto should be preferably in another file
-export class claimTokensDto {
+export class claimTokensDTO {
   constructor(public address: string) {}
 }
 
@@ -70,14 +70,14 @@ export class AppComponent {
   }
 
   requestTokens() {
-    const body = new claimTokensDto(this.wallet?.address ?? '');
+    const body = new claimTokensDTO(this.wallet?.address ?? '');
     this.http
       .post<any>('http://localhost:3000/claim-tokens', body)
       .subscribe((ans) => {
         const txHash = ans.result;
         // TODO: const tx = this.provider.getTransaction(txHash);
         // TODO: tx.wait()
-        // TODO: aster tx confirms we can call updateValues again
+        // TODO: after tx confirms we can call updateValues again
       });
   }
 
