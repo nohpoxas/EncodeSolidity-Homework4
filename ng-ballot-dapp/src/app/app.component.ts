@@ -23,13 +23,20 @@ export class AppComponent {
   tokenBalance: number | undefined;
   votePower: number | undefined;
 
+  importWallet: boolean;
+
   constructor(private http: HttpClient) {
+    this.importWallet = false;
     this.provider = ethers.getDefaultProvider('goerli');
     this.http
       .get<any>('http://localhost:3000/token-contract-address')
       .subscribe((ans) => {
         this.tokenAddress = ans.result;
       });
+  }
+
+  logout() {
+    this.wallet = undefined;
   }
 
   updateValues() {
@@ -53,6 +60,7 @@ export class AppComponent {
   }
 
   createWallet() {
+    this.importWallet = false;
     this.wallet = ethers.Wallet.createRandom().connect(this.provider);
     if (this.tokenAddress) {
       this.tokenContract = new ethers.Contract(
@@ -64,8 +72,25 @@ export class AppComponent {
     this.updateValues();
   }
 
-  importWallet(privateKey: string) {
+  displayImportWalletForm() {
+    this.importWallet = true;
+  }
+
+  importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey: string) {
     // TODO (optional): make this.wallet to be imported from private key
+    this.importWallet = false;
+    const validationArray = mnemonicOrPrivateKey.split(' ');
+    switch(mnemonicOrPrivateKey.split(' ').length) {
+      case 1:
+        this.wallet = new ethers.Wallet(mnemonicOrPrivateKey).connect(this.provider);
+        break;
+      case 12:
+        this.wallet = ethers.Wallet.fromMnemonic(mnemonicOrPrivateKey).connect(this.provider);
+        break;
+      default:
+        // TODO return error
+        console.error('Input should be a private key or a 12 mnemonic');
+    }
     this.updateValues();
   }
 
