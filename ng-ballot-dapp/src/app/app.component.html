@@ -57,11 +57,12 @@
     <div *ngIf="addApiKey" class="d-grid gap-3 d-sm-flex justify-content-sm-center">
       <input
         #etherscanKey
+        type="password"
         class="form-control"
         placeholder="Enter your etherscan API key">
       <button
         (click)="createProviderFromKey(etherscanKey.value)"
-        type="password"
+        type="button"
         class="btn btn-primary  btn-lg px-4 gap-3"
       >
         Submit

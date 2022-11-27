@@ -49,6 +49,8 @@ export class AppComponent {
   }
 
   logout() {
+    this.addApiKey = false;
+    this.importWallet = false;
     this.wallet = undefined;
   }
 
