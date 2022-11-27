@@ -28,7 +28,7 @@ export class AppService {
     return {result: contractsData.Ballot.address};
   }
 
-  async claimTokens(body) {
+  async claimTokens(address: string) {
     //recalculate prize
     let nonce = await provider.getTransactionCount(signer.address)
     let overrides = {
@@ -38,7 +38,7 @@ export class AppService {
       nonce
     }
     try {
-      let tx = await tokenContract.mint(body.address, '1', overrides)
+      let tx = await tokenContract.mint(address, '1', overrides)
       await tx.wait()
       return {
         status:'ok',
