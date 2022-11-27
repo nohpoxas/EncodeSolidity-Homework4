@@ -24,9 +24,11 @@ export class AppComponent {
   votePower: number | undefined;
   totalSupply: number | undefined;
 
+  addApiKey: boolean;
   importWallet: boolean;
 
   constructor(private http: HttpClient) {
+    this.addApiKey = false;
     this.importWallet = false;
     this.provider = ethers.getDefaultProvider('goerli');
     this.http
@@ -34,6 +36,16 @@ export class AppComponent {
       .subscribe((ans) => {
         this.tokenAddress = ans.result;
       });
+  }
+
+  displayAddApiKeyForm() {
+    this.addApiKey = true;
+    this.importWallet = false;
+  }
+
+  displayImportWalletForm() {
+    this.addApiKey = false;
+    this.importWallet = true;
   }
 
   logout() {
@@ -67,6 +79,13 @@ export class AppComponent {
     }
   }
 
+  createProviderFromKey(key: string) {
+    this.addApiKey = false;
+    if (key) {
+      this.provider = new ethers.providers.EtherscanProvider('goerli', key);
+    }
+  }
+
   createWallet() {
     this.importWallet = false;
     this.wallet = ethers.Wallet.createRandom().connect(this.provider);
@@ -78,10 +97,6 @@ export class AppComponent {
       );
     }
     this.updateValues();
-  }
-
-  displayImportWalletForm() {
-    this.importWallet = true;
   }
 
   importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey: string) {

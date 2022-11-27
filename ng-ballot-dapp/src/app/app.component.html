@@ -31,23 +31,41 @@
       <button disabled type="button" class="btn btn-danger btn-lg px-4 gap-3">
         Connect Wallet
       </button>
+      <button
+        (click)="displayAddApiKeyForm()"
+        type="button"
+        class="btn btn-secondary btn-lg px-4 gap-3"
+      >
+        Add API Key
+      </button>
     </div>
-    <div *ngIf="importWallet" class="d-grid gap-3">
+    <div *ngIf="importWallet" class="d-grid gap-3 d-sm-flex justify-content-sm-center">
       <input
         #mnemonicOrPrivateKey
         type="password"
         class="form-control"
         placeholder="Enter your mnemonic or private key"
       />
-      <div class="justify-content-sm-center">
-        <button
-          (click)="importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey.value)"
-          type="button"
-          class="btn btn-success btn-lg px-4 gap-3"
-        >
-          Submit
-        </button>
-      </div>
+      <button
+        (click)="importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey.value)"
+        type="button"
+        class="btn btn-primary btn-lg px-4 gap-3"
+      >
+        Submit
+      </button>
+    </div>
+    <div *ngIf="addApiKey" class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+      <input
+        #etherscanKey
+        class="form-control"
+        placeholder="Enter your etherscan API key">
+      <button
+        (click)="createProviderFromKey(etherscanKey.value)"
+        type="password"
+        class="btn btn-primary  btn-lg px-4 gap-3"
+      >
+        Submit
+      </button>
     </div>
     <div *ngIf="wallet">
       <p>The token address is {{ tokenAddress }}</p>
