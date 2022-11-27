@@ -81,7 +81,7 @@ export class AppComponent {
       });
   }
 
-  connectBallot() {
+  connectBallot(ballotAddress: string) {
     //TODO: connect a ballot instance attached to this address
     //TODO: fetch information of that ballot to be displayed in the page
   }
