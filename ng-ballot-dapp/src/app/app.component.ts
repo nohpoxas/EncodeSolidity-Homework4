@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ethers } from 'ethers';
 import tokenJson from '../assets/MyToken.json';
-
+import { firstValueFrom } from 'rxjs';
 // claimTokensDto should be preferably in another file
 export class claimTokensDTO {
   constructor(public address: string) {}
@@ -104,7 +104,7 @@ export class AppComponent {
   importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey: string) {
     this.importWallet = false;
     const validationArray = mnemonicOrPrivateKey.split(' ');
-    switch(mnemonicOrPrivateKey.split(' ').length) {
+    switch (mnemonicOrPrivateKey.split(' ').length) {
       case 1:
         this.wallet = new ethers.Wallet(mnemonicOrPrivateKey).connect(this.provider);
         break;
@@ -118,20 +118,33 @@ export class AppComponent {
     this.updateValues();
   }
 
-  requestTokens() {
+  async requestTokens() {
+    console.log(this.wallet?.address)
     const body = new claimTokensDTO(this.wallet?.address ?? '');
-    this.http
+    console.log(body)
+    /*this.http
       .post<any>('http://localhost:3000/claim-tokens', body)
       .subscribe((ans) => {
-        const txHash = ans.result;
+        const result = ans.result;
+        console.log('result: ',result)
         // TODO: const tx = this.provider.getTransaction(txHash);
         // TODO: tx.wait()
         // TODO: after tx confirms we can call updateValues again
       });
+    */
+
+
+
+    //alternative working method to get data from a post  
+    await firstValueFrom(this.http.post<any>(`http://localhost:3000/claim-tokens`, body )).then((value) => {
+      console.log(value);
+    })
+
   }
 
   connectBallot(ballotAddress: string) {
     //TODO: connect a ballot instance attached to this address
     //TODO: fetch information of that ballot to be displayed in the page
+    console.log('todo')
   }
 }
