@@ -32,6 +32,10 @@ export class AppComponent {
       });
   }
 
+  logout() {
+    this.wallet = undefined;
+  }
+
   updateValues() {
     this.wallet?.getBalance().then((balanceBN) => {
       this.ethBalance = parseFloat(ethers.utils.formatEther(balanceBN));
