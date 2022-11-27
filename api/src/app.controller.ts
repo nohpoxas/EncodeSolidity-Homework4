@@ -1,8 +1,10 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-export class claimTokenPostClass{
-  address:string
+
+export class claimTokensDTO {
+  address: string;
 }
+
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -29,7 +31,7 @@ export class AppController {
   }
 
   @Post('claim-tokens')
-  claimTokens(@Body() body :claimTokenPostClass){
-    return this.appService.claimTokens(body)
+  claimTokens(@Body() body: claimTokensDTO){
+    return this.appService.claimTokens(body.address)
   }
 }
