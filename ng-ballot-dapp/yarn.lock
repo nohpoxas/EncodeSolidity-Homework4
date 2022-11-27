@@ -2452,6 +2452,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@popperjs/core@npm:^2.11.6":
+  version: 2.11.6
+  resolution: "@popperjs/core@npm:2.11.6"
+  checksum: 47fb328cec1924559d759b48235c78574f2d71a8a6c4c03edb6de5d7074078371633b91e39bbf3f901b32aa8af9b9d8f82834856d2f5737a23475036b16817f0
+  languageName: node
+  linkType: hard
+
 "@schematics/angular@npm:14.2.10":
   version: 14.2.10
   resolution: "@schematics/angular@npm:14.2.10"
@@ -3311,6 +3318,22 @@ __metadata:
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
+  languageName: node
+  linkType: hard
+
+"bootstrap-icons@npm:^1.10.2":
+  version: 1.10.2
+  resolution: "bootstrap-icons@npm:1.10.2"
+  checksum: 1d73556a70b05c1b219c379243c24ea8186c773990b3bc5e8248825e7eae1c8137be90a2b7dd81fd46060a99558763886a069587a65a7f70a362bf5934e795e7
+  languageName: node
+  linkType: hard
+
+"bootstrap@npm:^5.2.3":
+  version: 5.2.3
+  resolution: "bootstrap@npm:5.2.3"
+  peerDependencies:
+    "@popperjs/core": ^2.11.6
+  checksum: 0211805dec6a190c0911d142966df30fdb4b4139a04cc6c23dd83c6045ea3cb0a966b360ab2e701e7b3ad96ff01e05fdc0914be97b41bd876b11e457a8bdc6a3
   languageName: node
   linkType: hard
 
@@ -6467,7 +6490,10 @@ __metadata:
     "@angular/platform-browser": ^14.2.0
     "@angular/platform-browser-dynamic": ^14.2.0
     "@angular/router": ^14.2.0
+    "@popperjs/core": ^2.11.6
     "@types/jasmine": ~4.0.0
+    bootstrap: ^5.2.3
+    bootstrap-icons: ^1.10.2
     ethers: ^5.7.2
     jasmine-core: ~4.3.0
     karma: ~6.4.0
