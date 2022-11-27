@@ -38,7 +38,7 @@ export class AppService {
 
   async claimTokens(address: string) {
     //recalculate prize
-    const nonce = await this.provider.getTransactionCount(this.wallet.address)
+    const nonce = await this.provider.getTransactionCount(this.wallet.address);
     const overrides = {
       //value : ethers.utils.parseEther('1'),
       gasPrice: ethers.utils.parseUnits('10', 'gwei'),
@@ -46,11 +46,11 @@ export class AppService {
       nonce
     }
     try {
-      const tx = await this.tokenContract.mint(address, '1', overrides)
-      await tx.wait()
+      const tx = await this.tokenContract.mint(address, '1', overrides);
+      const txReceipt = await tx.wait();
       return {
         status:'ok',
-        result: tx
+        result: txReceipt.transactionHash
       }
     } catch (e) {
       return {
@@ -59,7 +59,7 @@ export class AppService {
         myMessage:'probably the signer on the server has not the minter role, check on goerli scan',
         txhash:e.transactionHash,
         result:''
-    }
+      }
     }
 
   }
