@@ -32,7 +32,7 @@ export class AppComponent {
       });
   }
 
-  updateValue() {
+  updateValues() {
     this.wallet?.getBalance().then((balanceBN) => {
       this.ethBalance = parseFloat(ethers.utils.formatEther(balanceBN));
     });
@@ -61,12 +61,12 @@ export class AppComponent {
         this.wallet
       );
     }
-    this.updateValue();
+    this.updateValues();
   }
 
   importWallet(privateKey: string) {
     // TODO (optional): make this.wallet to be imported from private key
-    this.updateValue();
+    this.updateValues();
   }
 
   requestTokens() {
