@@ -20,12 +20,12 @@ export class AppService {
     return 'Encode Solidity Bootcamp project week 4 - Group 4';
   }
 
-  tokenContractAddress(): string {
-    return contractsData.Token.address;
+  tokenContractAddress() {
+    return {result: contractsData.Token.address};
   }
 
-  ballotContractAddress(): string {
-    return contractsData.Ballot.address;
+  ballotContractAddress() {
+    return {result: contractsData.Ballot.address};
   }
 
   async claimTokens(body) {

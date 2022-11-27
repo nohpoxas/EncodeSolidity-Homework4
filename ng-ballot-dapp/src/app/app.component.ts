@@ -26,7 +26,7 @@ export class AppComponent {
   constructor(private http: HttpClient) {
     this.provider = ethers.getDefaultProvider('goerli');
     this.http
-      .get<any>('http://localhost:3000/token-address')
+      .get<any>('http://localhost:3000/token-contract-address')
       .subscribe((ans) => {
         this.tokenAddress = ans.result;
       });

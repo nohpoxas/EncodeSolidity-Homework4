@@ -13,12 +13,12 @@ export class AppController {
   }
 
   @Get('token-contract-address')
-  tokenContractAddress(): string {
+  tokenContractAddress() {
     return this.appService.tokenContractAddress();
   }
 
   @Get('ballot-contract-address')
-  ballotContractAddress(): string {
+  ballotContractAddress() {
     return this.appService.ballotContractAddress();
   }
 
