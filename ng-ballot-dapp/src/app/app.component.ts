@@ -22,6 +22,7 @@ export class AppComponent {
   ethBalance: number | undefined;
   tokenBalance: number | undefined;
   votePower: number | undefined;
+  totalSupply: number | undefined;
 
   importWallet: boolean;
 
@@ -54,6 +55,13 @@ export class AppComponent {
           this.votePower = parseFloat(
             ethers.utils.formatEther(votingPowerBN)
           );
+        }
+      );
+      this.tokenContract['totalSupply']().then(
+        (totalSupplyBN: ethers.BigNumberish) => {
+          this.totalSupply = parseFloat(
+            ethers.utils.formatEther(totalSupplyBN)
+          )
         }
       );
     }
