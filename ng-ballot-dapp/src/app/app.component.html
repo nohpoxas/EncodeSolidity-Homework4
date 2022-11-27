@@ -19,8 +19,8 @@
         Connect Wallet
       </button>
     </div>
-    <p *ngIf="tokenAddress">The token address is {{ tokenAddress }}</p>
     <div *ngIf="wallet">
+      <p>The token address is {{ tokenAddress }}</p>
       <p>Your wallet address is {{ wallet.address }}</p>
       <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-4">
         <div class="card">
@@ -30,7 +30,7 @@
           <div class="card-body">Your token balance is {{ tokenBalance }}</div>
         </div>
         <div class="card">
-          <div class="card-body">Your voting power is {{ votingPower }}</div>
+          <div class="card-body">Your voting power is {{ votePower }}</div>
         </div>
       </div>
       <button

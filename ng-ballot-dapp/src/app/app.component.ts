@@ -21,7 +21,7 @@ export class AppComponent {
 
   ethBalance: number | undefined;
   tokenBalance: number | undefined;
-  votingPower: number | undefined;
+  votePower: number | undefined;
 
   constructor(private http: HttpClient) {
     this.provider = ethers.getDefaultProvider('goerli');
@@ -30,6 +30,26 @@ export class AppComponent {
       .subscribe((ans) => {
         this.tokenAddress = ans.result;
       });
+  }
+
+  updateValue() {
+    this.wallet?.getBalance().then((balanceBN) => {
+      this.ethBalance = parseFloat(ethers.utils.formatEther(balanceBN));
+    });
+    if (this.tokenContract) {
+      this.tokenContract['balanceOf'](this.wallet?.address).then(
+        (balanceBN: ethers.BigNumberish) => {
+          this.tokenBalance = parseFloat(ethers.utils.formatEther(balanceBN));
+        }
+      );
+      this.tokenContract['getVotes'](this.wallet?.address).then(
+        (votingPowerBN: ethers.BigNumberish) => {
+          this.votePower = parseFloat(
+            ethers.utils.formatEther(votingPowerBN)
+          );
+        }
+      );
+    }
   }
 
   createWallet() {
@@ -42,26 +62,6 @@ export class AppComponent {
       );
     }
     this.updateValue();
-  }
-
-  async updateValue() {
-    this.wallet?.getBalance().then((balanceBN) => {
-      this.ethBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-    });
-    if (this.tokenContract) {
-      this.tokenContract['balanceOf'](this.wallet?.address).then(
-        (balanceBN: ethers.BigNumberish) => {
-          this.tokenBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-        }
-      );
-      this.tokenContract['getVotes'](this.wallet?.address).then(
-        (votingPowerBN: ethers.BigNumberish) => {
-          this.votingPower = parseFloat(
-            ethers.utils.formatEther(votingPowerBN)
-          );
-        }
-      );
-    }
   }
 
   importWallet(privateKey: string) {
