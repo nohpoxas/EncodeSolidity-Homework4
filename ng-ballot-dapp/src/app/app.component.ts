@@ -24,6 +24,8 @@ export class AppComponent {
   votePower: number | undefined;
   totalSupply: number | undefined;
 
+  mintTxHash: string = '';
+
   addApiKey: boolean;
   importWallet: boolean;
 
@@ -122,11 +124,15 @@ export class AppComponent {
     const body = new claimTokensDTO(this.wallet?.address ?? '');
     this.http
       .post<any>('http://localhost:3000/claim-tokens', body)
-      .subscribe((ans) => {
-        const txHash = ans.result;
-        // TODO: const tx = this.provider.getTransaction(txHash);
-        // TODO: tx.wait()
-        // TODO: after tx confirms we can call updateValues again
+      .subscribe(async (ans) => {
+        this.mintTxHash = ans.result;
+        console.log(`Received transaction hash ${ans.result}`);
+        const tx = await this.provider.getTransaction(this.mintTxHash);
+        const txReceipt = await tx.wait();
+        if (txReceipt.status) {
+          this.updateValues();
+        }
+        this.mintTxHash = '';
       });
   }
 
