@@ -77,7 +77,6 @@ export class AppComponent {
   }
 
   importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey: string) {
-    // TODO (optional): make this.wallet to be imported from private key
     this.importWallet = false;
     const validationArray = mnemonicOrPrivateKey.split(' ');
     switch(mnemonicOrPrivateKey.split(' ').length) {
@@ -88,7 +87,7 @@ export class AppComponent {
         this.wallet = ethers.Wallet.fromMnemonic(mnemonicOrPrivateKey).connect(this.provider);
         break;
       default:
-        // TODO return error
+        // TODO return error on frontend to show the user an error happened
         console.error('Input should be a private key or a 12 mnemonic');
     }
     this.updateValues();
