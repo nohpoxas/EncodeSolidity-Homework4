@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ethers } from 'ethers';
 import tokenJson from '../assets/MyToken.json';
-import { firstValueFrom } from 'rxjs';
+import tokenizedBallotJson from '../assets/TokenizedBallot.json';
+
 // claimTokensDto should be preferably in another file
 export class claimTokensDTO {
   constructor(public address: string) {}
@@ -18,6 +19,7 @@ export class AppComponent {
   provider: ethers.providers.Provider;
   tokenAddress: string | undefined;
   tokenContract: ethers.Contract | undefined;
+  tokenizedBallotContract: ethers.Contract | undefined;
 
   ethBalance: number | undefined;
   tokenBalance: number | undefined;
@@ -25,6 +27,10 @@ export class AppComponent {
   totalSupply: number | undefined;
 
   mintTxHash: string = '';
+
+  ballotAddress: string | undefined;
+  ballotTargetBlockNumber: string | undefined;
+  ballotProposals: string[] = [];
 
   addApiKey: boolean = false;
   importWallet: boolean = false;
@@ -81,6 +87,7 @@ export class AppComponent {
   }
 
   createContractInstanceAndUpdateValues() {
+    this.ballotAddress = undefined;
     if (this.tokenAddress) {
       this.tokenContract = new ethers.Contract(
         this.tokenAddress,
@@ -116,7 +123,6 @@ export class AppComponent {
   async requestTokens() {
     console.log(this.wallet?.address)
     const body = new claimTokensDTO(this.wallet?.address ?? '');
-    console.log(body)
     this.http
       .post<any>('http://localhost:3000/claim-tokens', body)
       .subscribe(async (ans) => {
@@ -144,6 +150,24 @@ export class AppComponent {
   connectBallot(ballotAddress: string) {
     //TODO: connect a ballot instance attached to this address
     //TODO: fetch information of that ballot to be displayed in the page
-    console.log('todo')
+    this.ballotAddress = ballotAddress;
+    this.tokenizedBallotContract = new ethers.Contract(
+      ballotAddress,
+      tokenizedBallotJson.abi,
+      this.wallet
+    );
+    console.log(`Ballot Contract address ${ballotAddress}`);
+    this.tokenizedBallotContract['targetBlockNumber']().then((blockNumber: string) => {
+      this.ballotTargetBlockNumber = blockNumber;
+    });
+    this.ballotProposals = [];
+    // Read all proposals from first one
+    const ballotProposalsPromises = [];
+    for (let i = 0; i < 3; i++) {
+      ballotProposalsPromises.push(this.tokenizedBallotContract['proposals'](i));
+    }
+    Promise.all(ballotProposalsPromises).then((proposals: any[]) => {
+      this.ballotProposals = proposals.map((proposal) => ethers.utils.toUtf8String(proposal.name));
+    });
   }
 }

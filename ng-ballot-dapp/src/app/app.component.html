@@ -111,6 +111,15 @@
       >
         Connect Ballot
       </button>
+      <div *ngIf="ballotAddress">
+        <div>address {{ ballotAddress }}</div>
+        <div>target block number {{ ballotTargetBlockNumber }}</div>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <div *ngFor="let proposal of ballotProposals" class="card">
+            <div class="card-body">{{ proposal }}</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
