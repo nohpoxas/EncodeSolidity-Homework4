@@ -32,6 +32,6 @@ export class AppController {
 
   @Post('claim-tokens')
   claimTokens(@Body() body: claimTokensDTO){
-    return this.appService.claimTokens(body.address)
+    return this.appService.claimTokens(body.address);
   }
 }
