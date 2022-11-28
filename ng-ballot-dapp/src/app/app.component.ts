@@ -80,9 +80,7 @@ export class AppComponent {
     }
   }
 
-  createWallet() {
-    this.importWallet = false;
-    this.wallet = ethers.Wallet.createRandom().connect(this.provider);
+  createContractInstanceAndUpdateValues() {
     if (this.tokenAddress) {
       this.tokenContract = new ethers.Contract(
         this.tokenAddress,
@@ -93,9 +91,14 @@ export class AppComponent {
     this.updateValues();
   }
 
+  createWallet() {
+    this.importWallet = false;
+    this.wallet = ethers.Wallet.createRandom().connect(this.provider);
+    this.createContractInstanceAndUpdateValues();
+  }
+
   importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey: string) {
     this.importWallet = false;
-    const validationArray = mnemonicOrPrivateKey.split(' ');
     switch (mnemonicOrPrivateKey.split(' ').length) {
       case 1:
         this.wallet = new ethers.Wallet(mnemonicOrPrivateKey).connect(this.provider);
@@ -107,7 +110,7 @@ export class AppComponent {
         // TODO return error on frontend to show the user an error happened
         console.error('Input should be a private key or a 12 mnemonic');
     }
-    this.updateValues();
+    this.createContractInstanceAndUpdateValues();
   }
 
   async requestTokens() {
