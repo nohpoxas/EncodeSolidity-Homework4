@@ -24,14 +24,13 @@ export class AppController {
     return this.appService.ballotContractAddress();
   }
 
-
   @Get('get-participants-balance')
   async getParticipantsBalance() {
     return await this.appService.getParticipantsBalance();
   }
 
   @Post('claim-tokens')
-  claimTokens(@Body() body: claimTokensDTO){
-    return this.appService.claimTokens(body.address)
+  claimTokens(@Body() body: claimTokensDTO) {
+    return this.appService.claimTokens(body.address);
   }
 }

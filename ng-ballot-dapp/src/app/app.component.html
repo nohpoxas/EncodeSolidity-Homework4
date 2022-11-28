@@ -39,7 +39,10 @@
         Add API Key
       </button>
     </div>
-    <div *ngIf="importWallet" class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+    <div
+      *ngIf="importWallet"
+      class="d-grid gap-3 d-sm-flex justify-content-sm-center"
+    >
       <input
         #mnemonicOrPrivateKey
         type="password"
@@ -47,31 +50,46 @@
         placeholder="Enter your mnemonic or private key"
       />
       <button
-        (click)="importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey.value)"
+        (click)="
+          importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey.value)
+        "
         type="button"
         class="btn btn-primary btn-lg px-4 gap-3"
       >
         Submit
       </button>
     </div>
-    <div *ngIf="addApiKey" class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+    <div
+      *ngIf="addApiKey"
+      class="d-grid gap-3 d-sm-flex justify-content-sm-center"
+    >
       <input
         #etherscanKey
         type="password"
         class="form-control"
-        placeholder="Enter your etherscan API key">
+        placeholder="Enter your etherscan API key"
+      />
       <button
         (click)="createProviderFromKey(etherscanKey.value)"
         type="button"
-        class="btn btn-primary  btn-lg px-4 gap-3"
+        class="btn btn-primary btn-lg px-4 gap-3"
       >
         Submit
       </button>
     </div>
-    <div *ngIf="wallet">
-      <p>The token address is {{ tokenAddress }}</p>
-      <p>Your wallet address is {{ wallet.address }}</p>
-      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-4">
+    <div *ngIf="wallet" class="d-grid gap-3 justify-content-sm-center">
+      <div>The token address is {{ tokenAddress }}</div>
+      <div>Your wallet address is {{ wallet.address }}</div>
+      <div *ngIf="updating">
+        <div *ngIf="updating" class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <br />
+      </div>
+      <div
+        *ngIf="!updating"
+        class="d-grid gap-2 d-sm-flex justify-content-sm-center"
+      >
         <div class="card">
           <div class="card-body">Your ETH balance is {{ ethBalance }}</div>
         </div>
@@ -105,6 +123,15 @@
       >
         Connect Ballot
       </button>
+      <div *ngIf="ballotAddress">
+        <div>address {{ ballotAddress }}</div>
+        <div>target block number {{ ballotTargetBlockNumber }}</div>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <div *ngFor="let proposal of ballotProposals" class="card">
+            <div class="card-body">{{ proposal }}</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

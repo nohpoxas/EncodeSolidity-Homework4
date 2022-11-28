@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ethers } from 'ethers';
 import tokenJson from '../assets/MyToken.json';
-import { firstValueFrom } from 'rxjs';
+import tokenizedBallotJson from '../assets/TokenizedBallot.json';
+
 // claimTokensDto should be preferably in another file
 export class claimTokensDTO {
   constructor(public address: string) {}
@@ -18,6 +19,7 @@ export class AppComponent {
   provider: ethers.providers.Provider;
   tokenAddress: string | undefined;
   tokenContract: ethers.Contract | undefined;
+  tokenizedBallotContract: ethers.Contract | undefined;
 
   ethBalance: number | undefined;
   tokenBalance: number | undefined;
@@ -26,12 +28,15 @@ export class AppComponent {
 
   mintTxHash: string = '';
 
-  addApiKey: boolean;
-  importWallet: boolean;
+  ballotAddress: string | undefined;
+  ballotTargetBlockNumber: string | undefined;
+  ballotProposals: string[] = [];
+
+  addApiKey: boolean = false;
+  importWallet: boolean = false;
+  updating: boolean = false;
 
   constructor(private http: HttpClient) {
-    this.addApiKey = false;
-    this.importWallet = false;
     this.provider = ethers.getDefaultProvider('goerli');
     this.http
       .get<any>('http://localhost:3000/token-contract-address')
@@ -57,29 +62,30 @@ export class AppComponent {
   }
 
   updateValues() {
-    this.wallet?.getBalance().then((balanceBN) => {
-      this.ethBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-    });
-    if (this.tokenContract) {
-      this.tokenContract['balanceOf'](this.wallet?.address).then(
-        (balanceBN: ethers.BigNumberish) => {
-          this.tokenBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-        }
+    if (this.wallet && this.tokenContract) {
+      this.updating = true;
+      const ethBalancePromise = this.wallet.getBalance();
+      const tokenBalancePromise = this.tokenContract['balanceOf'](
+        this.wallet.address
       );
-      this.tokenContract['getVotes'](this.wallet?.address).then(
-        (votingPowerBN: ethers.BigNumberish) => {
-          this.votePower = parseFloat(
-            ethers.utils.formatEther(votingPowerBN)
-          );
-        }
+      const votePowerPromise = this.tokenContract['getVotes'](
+        this.wallet.address
       );
-      this.tokenContract['totalSupply']().then(
-        (totalSupplyBN: ethers.BigNumberish) => {
-          this.totalSupply = parseFloat(
-            ethers.utils.formatEther(totalSupplyBN)
-          )
-        }
-      );
+      const totalSupplyPromise = this.tokenContract['totalSupply']();
+      Promise.all([
+        ethBalancePromise,
+        tokenBalancePromise,
+        votePowerPromise,
+        totalSupplyPromise,
+      ]).then(([ethBalanceBN, tokenBalanceBN, votePowerBN, totalSupplyBN]) => {
+        this.ethBalance = parseFloat(ethers.utils.formatEther(ethBalanceBN));
+        this.tokenBalance = parseFloat(
+          ethers.utils.formatEther(tokenBalanceBN)
+        );
+        this.votePower = parseFloat(ethers.utils.formatEther(votePowerBN));
+        this.totalSupply = parseFloat(ethers.utils.formatEther(totalSupplyBN));
+        this.updating = false;
+      });
     }
   }
 
@@ -90,9 +96,8 @@ export class AppComponent {
     }
   }
 
-  createWallet() {
-    this.importWallet = false;
-    this.wallet = ethers.Wallet.createRandom().connect(this.provider);
+  createContractInstanceAndUpdateValues() {
+    this.ballotAddress = undefined;
     if (this.tokenAddress) {
       this.tokenContract = new ethers.Contract(
         this.tokenAddress,
@@ -103,27 +108,35 @@ export class AppComponent {
     this.updateValues();
   }
 
+  createWallet() {
+    this.importWallet = false;
+    this.wallet = ethers.Wallet.createRandom().connect(this.provider);
+    this.createContractInstanceAndUpdateValues();
+  }
+
   importWalletFromMnemonicOrPrivateKey(mnemonicOrPrivateKey: string) {
     this.importWallet = false;
-    const validationArray = mnemonicOrPrivateKey.split(' ');
     switch (mnemonicOrPrivateKey.split(' ').length) {
       case 1:
-        this.wallet = new ethers.Wallet(mnemonicOrPrivateKey).connect(this.provider);
+        this.wallet = new ethers.Wallet(mnemonicOrPrivateKey).connect(
+          this.provider
+        );
         break;
       case 12:
-        this.wallet = ethers.Wallet.fromMnemonic(mnemonicOrPrivateKey).connect(this.provider);
+        this.wallet = ethers.Wallet.fromMnemonic(mnemonicOrPrivateKey).connect(
+          this.provider
+        );
         break;
       default:
         // TODO return error on frontend to show the user an error happened
         console.error('Input should be a private key or a 12 mnemonic');
     }
-    this.updateValues();
+    this.createContractInstanceAndUpdateValues();
   }
 
   async requestTokens() {
-    console.log(this.wallet?.address)
+    console.log(this.wallet?.address);
     const body = new claimTokensDTO(this.wallet?.address ?? '');
-    console.log(body)
     this.http
       .post<any>('http://localhost:3000/claim-tokens', body)
       .subscribe(async (ans) => {
@@ -136,11 +149,8 @@ export class AppComponent {
         }
         this.mintTxHash = '';
       });
-    
 
-
-
-    //alternative working method to get data from a post  
+    //alternative working method to get data from a post
     /*
     await firstValueFrom(this.http.post<any>(`http://localhost:3000/claim-tokens`, body )).then((value) => {
       console.log(value);
@@ -151,6 +161,30 @@ export class AppComponent {
   connectBallot(ballotAddress: string) {
     //TODO: connect a ballot instance attached to this address
     //TODO: fetch information of that ballot to be displayed in the page
-    console.log('todo')
+    this.ballotAddress = ballotAddress;
+    this.tokenizedBallotContract = new ethers.Contract(
+      ballotAddress,
+      tokenizedBallotJson.abi,
+      this.wallet
+    );
+    console.log(`Ballot Contract address ${ballotAddress}`);
+    this.tokenizedBallotContract['targetBlockNumber']().then(
+      (blockNumber: string) => {
+        this.ballotTargetBlockNumber = blockNumber;
+      }
+    );
+    this.ballotProposals = [];
+    // Read all proposals from first one
+    const ballotProposalsPromises = [];
+    for (let i = 0; i < 3; i++) {
+      ballotProposalsPromises.push(
+        this.tokenizedBallotContract['proposals'](i)
+      );
+    }
+    Promise.all(ballotProposalsPromises).then((proposals: any[]) => {
+      this.ballotProposals = proposals.map((proposal) =>
+        ethers.utils.toUtf8String(proposal.name)
+      );
+    });
   }
 }
