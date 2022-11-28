@@ -68,10 +68,16 @@
         Submit
       </button>
     </div>
-    <div *ngIf="wallet">
-      <p>The token address is {{ tokenAddress }}</p>
-      <p>Your wallet address is {{ wallet.address }}</p>
-      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-4">
+    <div *ngIf="wallet" class="d-grid gap-3 justify-content-sm-center">
+      <div>The token address is {{ tokenAddress }}</div>
+      <div>Your wallet address is {{ wallet.address }}</div>
+      <div *ngIf="updating">
+        <div *ngIf="updating" class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <br>
+      </div>
+      <div *ngIf="!updating" class="d-grid gap-2 d-sm-flex justify-content-sm-center">
         <div class="card">
           <div class="card-body">Your ETH balance is {{ ethBalance }}</div>
         </div>
