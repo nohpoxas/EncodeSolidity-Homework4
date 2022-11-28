@@ -26,12 +26,11 @@ export class AppComponent {
 
   mintTxHash: string = '';
 
-  addApiKey: boolean;
-  importWallet: boolean;
+  addApiKey: boolean = false;
+  importWallet: boolean = false;
+  updating: boolean = false;
 
   constructor(private http: HttpClient) {
-    this.addApiKey = false;
-    this.importWallet = false;
     this.provider = ethers.getDefaultProvider('goerli');
     this.http
       .get<any>('http://localhost:3000/token-contract-address')
@@ -57,29 +56,20 @@ export class AppComponent {
   }
 
   updateValues() {
-    this.wallet?.getBalance().then((balanceBN) => {
-      this.ethBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-    });
-    if (this.tokenContract) {
-      this.tokenContract['balanceOf'](this.wallet?.address).then(
-        (balanceBN: ethers.BigNumberish) => {
-          this.tokenBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-        }
-      );
-      this.tokenContract['getVotes'](this.wallet?.address).then(
-        (votingPowerBN: ethers.BigNumberish) => {
-          this.votePower = parseFloat(
-            ethers.utils.formatEther(votingPowerBN)
-          );
-        }
-      );
-      this.tokenContract['totalSupply']().then(
-        (totalSupplyBN: ethers.BigNumberish) => {
-          this.totalSupply = parseFloat(
-            ethers.utils.formatEther(totalSupplyBN)
-          )
-        }
-      );
+    if (this.wallet && this.tokenContract) {
+      this.updating = true;
+      const ethBalancePromise = this.wallet.getBalance();
+      const tokenBalancePromise = this.tokenContract['balanceOf'](this.wallet.address);
+      const votePowerPromise = this.tokenContract['getVotes'](this.wallet.address);
+      const totalSupplyPromise = this.tokenContract['totalSupply']();
+      Promise.all([ethBalancePromise, tokenBalancePromise, votePowerPromise, totalSupplyPromise])
+        .then(([ethBalanceBN, tokenBalanceBN, votePowerBN, totalSupplyBN]) => {
+          this.ethBalance = parseFloat(ethers.utils.formatEther(ethBalanceBN));
+          this.tokenBalance = parseFloat(ethers.utils.formatEther(tokenBalanceBN));
+          this.votePower = parseFloat(ethers.utils.formatEther(votePowerBN));
+          this.totalSupply = parseFloat(ethers.utils.formatEther(totalSupplyBN));
+          this.updating = false;
+        });
     }
   }
 
